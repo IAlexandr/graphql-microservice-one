@@ -13,7 +13,7 @@ type Query {
   user(id: ID!): User
 }
 type Subscription {
-  userChanged: User!
+  userChanged: User
 }
 type Mutation {
   change(id: ID!, name: String!): User
@@ -33,7 +33,13 @@ const resolvers = {
   },
   Subscription: {
     userChanged: {
+      resolve: (payload, args, context, info) => {
+        console.log('resolve!!!!', payload);
+        // Manipulate and return the new value
+        return payload.userChanged;
+      },
       subscribe: () => {
+        console.log('userChanged subscribe!');
         return pubsub.asyncIterator('USER_CHANGED');
       },
     },
@@ -52,7 +58,7 @@ const resolvers = {
   },
 };
 
-// (EXECUTABLE) SCHEMA
+// TODO (EXECUTABLE) SCHEMA
 module.exports = makeExecutableSchema({
   typeDefs,
   resolvers,
