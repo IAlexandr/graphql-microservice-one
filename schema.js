@@ -1,5 +1,5 @@
 import pubsub from './pubsub';
-const { makeExecutableSchema } = require('graphql-tools');
+import { makeExecutableSchema } from 'graphql-tools';
 const data = [
   { id: '1', name: 'Petya' },
   { id: '2', name: 'Vasya' },
@@ -33,11 +33,6 @@ const resolvers = {
   },
   Subscription: {
     userChanged: {
-      resolve: (payload, args, context, info) => {
-        console.log('resolve!!!!', payload);
-        // Manipulate and return the new value
-        return payload.userChanged;
-      },
       subscribe: () => {
         console.log('userChanged subscribe!');
         return pubsub.asyncIterator('USER_CHANGED');
@@ -59,7 +54,7 @@ const resolvers = {
 };
 
 // TODO (EXECUTABLE) SCHEMA
-module.exports = makeExecutableSchema({
+export default makeExecutableSchema({
   typeDefs,
   resolvers,
 });
