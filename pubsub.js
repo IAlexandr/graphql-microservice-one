@@ -4,22 +4,26 @@ import Redis from 'ioredis';
 const options = {
   port: 32768,
   retryStrategy: options => {
-    return Math.max(options * 100, 3000);
+    return 10000;
   },
   showFriendlyErrorStack: process.env.NODE_ENV !== 'production',
 };
-const redis = new Redis(options);
+const redisSubscriber = new Redis(options);
+const redisPublisher = new Redis(options);
 
-redis.on('connect', () => {
+const connceted = () => {
   console.log('Redis connection port', options.port);
-});
-redis.on('error', error => {
-  console.log('Redis connection error', error);
-});
+};
+const error = err => {
+  console.log('Redis connection error', err.message);
+};
+redisSubscriber.on('connect', connceted);
+redisSubscriber.on('error', error);
+redisPublisher.on('error', () => {});
 
 const pubsub = new RedisPubSub({
-  publisher: redis,
-  subscriber: redis,
+  publisher: redisPublisher,
+  subscriber: redisSubscriber,
 });
 
-module.exports = pubsub;
+export default pubsub;
